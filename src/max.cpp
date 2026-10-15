@@ -8,8 +8,14 @@
 
 std::vector<int32_t> vec = {11,4,-3,2,1,8,5,4};
 
-void split(std::vector<int32_t> &in){
-    
+std::vector<int32_t> split(std::vector<int32_t> &in){
+    std::vector<int32_t> *vec1;
+    std::vector<int32_t> *vec2;
+
+    vec1,vec2 = new std::vector<int32_t>{};
+    for(auto i{0uz}; i + 1u < in.size(); ++i){
+        
+    }
 }
 
 int32_t maximum(std::vector<int32_t> &input){ // Takes 3 numbers, return the largest one
