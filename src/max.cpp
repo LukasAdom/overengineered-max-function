@@ -5,8 +5,12 @@
 #include <cstdint>
 #include <vector>
 #include <math.h>
+#include <atomic>
+#include <random>
 
-std::vector<int32_t> vec = {11,4,-3,2,1,8,5,4,5,-12,4,6,2,7,4,2,5,7,8,1,2,6,7,53,1,99,33,23,4,6,7,3,2,4,6,76,4,6,7,5,56,7,3,4,65,7,9,1,34,6,78,5,8,9,3,6,7,4,2,5,7,8,9,21,2,5,4,9};
+std::random_device rd;
+std::uniform_int_distribution<int32_t> dist(-9999999,9999999);
+std::vector<int32_t> vec(10000000u);
 
 int32_t maximum(std::vector<int32_t> &input){ // Takes 3 numbers, return the largest one
     if(input.empty()){
@@ -23,7 +27,8 @@ int32_t maximum(std::vector<int32_t> &input){ // Takes 3 numbers, return the lar
 
 void split(std::vector<int32_t> &in){
     std::vector<int32_t> vec1;
-    int32_t result{};
+    std::vector<int32_t> vec2;
+    std::atomic<int32_t> result(0);
 
     for(auto i{1uz}; i<=std::thread::hardware_concurrency(); ++i){
         std::vector<int32_t> v(in.begin(), in.begin() + in.size()/std::thread::hardware_concurrency() + (in.size()%std::thread::hardware_concurrency()));
@@ -32,21 +37,28 @@ void split(std::vector<int32_t> &in){
         in.erase(in.begin(), in.begin() + v.size());
 
         std::thread t([&](){
-            result = maximum(vec1);
+            result.exchange(maximum(vec1));
         });
         t.join();
 
-        std::cout << result << "\n";
+        vec2.emplace_back(result.load());
     }
+    std::cout << maximum(vec2);
 }
 
 int main(){
+
+    for(auto i {0uz}; i < vec.size(); ++i){
+        vec[i] = dist(rd);
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
     split(vec);
     auto end = std::chrono::high_resolution_clock::now();
 
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+    std::cout << "\nTime: " << duration.count() << " Microseconds";
 
     return 0;
 }
