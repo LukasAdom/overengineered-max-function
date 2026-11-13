@@ -12,7 +12,7 @@ std::random_device rd;
 std::uniform_int_distribution<int32_t> dist(-9999999,9999999);
 std::vector<int32_t> vec(10000000u);
 
-int32_t maximum(std::vector<int32_t> &input){ // Takes 3 numbers, return the largest one
+int32_t maximum(std::vector<int32_t> &input){
     if(input.empty()){
         return 0;
     }
